@@ -1,7 +1,19 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import {
+  Box,
+  Paper,
+  TextField,
+  Button,
+  Typography,
+  Alert,
+  Container,
+  CircularProgress,
+  InputAdornment,
+} from '@mui/material';
+import { PersonAddOutlined, PersonOutline, PhoneOutlined } from '@mui/icons-material';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { register, clearError } from './userSlice';
-import styles from './UserForm.module.css';
 
 interface FormErrors {
   name?: string;
@@ -9,14 +21,20 @@ interface FormErrors {
 }
 
 export default function RegisterForm() {
+  const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { status, error, isAuthenticated } = useAppSelector(state => state.user);
-
   const [form, setForm] = useState({ name: '', phone: '' });
   const [errors, setErrors] = useState<FormErrors>({});
   const [showSuccess, setShowSuccess] = useState(false);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+
+  // Format phone number as user types
+  const formatPhoneNumber = (value: string): string => {
+    const digits = value.replace(/\D/g, '');
+    if (digits.length <= 3) return digits;
+    if (digits.length <= 6) return `${digits.slice(0, 3)}-${digits.slice(3)}`;
+    return `${digits.slice(0, 3)}-${digits.slice(3, 6)}-${digits.slice(6, 10)}`;
+  };
 
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {};
@@ -27,19 +45,31 @@ export default function RegisterForm() {
       newErrors.name = 'Name must be at least 2 characters';
     }
     
-    if (!form.phone.trim()) {
+    const phoneDigits = form.phone.replace(/\D/g, '');
+    if (!phoneDigits) {
       newErrors.phone = 'Phone number is required';
-    } else if (!/^05\d{8}$/.test(form.phone.replace(/[-\s]/g, ''))) {
+    } else if (!/^05\d{8}$/.test(phoneDigits)) {
       newErrors.phone = 'Please enter a valid Israeli phone number (05xxxxxxxx)';
     }
     
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setForm(prev => ({ ...prev, [name]: value }));
+    
+    if (name === 'phone') {
+      // Format phone number and limit to 10 digits
+      const digits = value.replace(/\D/g, '');
+      if (digits.length <= 10) {
+        const formattedPhone = formatPhoneNumber(digits);
+        setForm(prev => ({ ...prev, [name]: formattedPhone }));
+      }
+    } else if (name === 'name') {
+      // Capitalize first letters and clean input
+      const cleanName = value.replace(/[^א-ת\s\w]/g, '');
+      setForm(prev => ({ ...prev, [name]: cleanName }));
+    }
     
     // Clear field error when user starts typing
     if (errors[name as keyof FormErrors]) {
@@ -58,10 +88,9 @@ export default function RegisterForm() {
     if (!validateForm()) {
       return;
     }
-    
-    const result = await dispatch(register({
+      const result = await dispatch(register({
       name: form.name.trim(),
-      phone: form.phone.replace(/[-\s]/g, '')
+      phone: form.phone.replace(/\D/g, '') // Send only digits
     }));
     
     if (register.fulfilled.match(result)) {
@@ -70,100 +99,122 @@ export default function RegisterForm() {
       setTimeout(() => setShowSuccess(false), 5000);
     }
   };
-
   useEffect(() => {
     if (isAuthenticated) {
-      // Redirect to dashboard or show success message
-      console.log('User registered and authenticated successfully');
+      navigate('/dashboard');
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, navigate]);
 
   return (
-    <div className="form-container">
-      <div className="page-header">
-        <h2 className="page-title">Create Account</h2>
-        <p className="page-subtitle">Join our AI learning platform</p>
-      </div>
-      
-      <form className={styles.form} onSubmit={handleSubmit}>
-        <div className="form-group">
-          <label htmlFor="name">Full Name</label>
-          <input
-            id="name"
-            name="name"
-            type="text"
-            value={form.name}
-            onChange={handleChange}
-            placeholder="Enter your full name"
-            className={errors.name ? 'error' : ''}
-            disabled={status === 'loading'}
-          />
-          {errors.name && <div className="error-message">{errors.name}</div>}
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="phone">Phone Number</label>
-          <input
-            id="phone"
-            name="phone"
-            type="tel"
-            value={form.phone}
-            onChange={handleChange}
-            placeholder="05X-XXX-XXXX"
-            className={errors.phone ? 'error' : ''}
-            disabled={status === 'loading'}
-          />
-          {errors.phone && <div className="error-message">{errors.phone}</div>}
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="email">Email</label>
-          <input
-            id="email"
-            name="email"
-            type="email"
-            value={email}
-            onChange={e => setEmail(e.target.value)}
-            placeholder="Enter your email"
-            required
-          />
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="password">Password</label>
-          <input
-            id="password"
-            name="password"
-            type="password"
-            value={password}
-            onChange={e => setPassword(e.target.value)}
-            placeholder="Enter your password"
-            required
-          />
-        </div>
-
-        <button 
-          type="submit" 
-          disabled={status === 'loading'}
-          className={`btn btn-primary ${status === 'loading' ? 'btn-loading' : ''}`}
+    <Container maxWidth="sm">
+      <Box
+        sx={{
+          minHeight: '100vh',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          py: 3,
+        }}
+      >
+        <Paper
+          elevation={3}
+          sx={{
+            p: 4,
+            width: '100%',
+            maxWidth: 400,
+          }}
         >
-          {status === 'loading' ? 'Creating Account...' : 'Create Account'}
-        </button>
+          <Box sx={{ textAlign: 'center', mb: 3 }}>
+            <PersonAddOutlined color="primary" sx={{ fontSize: 48, mb: 2 }} />
+            <Typography variant="h4" component="h1" gutterBottom>
+              Create Account
+            </Typography>
+            <Typography variant="body1" color="text.secondary">
+              Join our AI learning platform
+            </Typography>
+          </Box>
 
-        {error && <div className="error-message" style={{ marginTop: '15px' }}>{error}</div>}
-        {showSuccess && (
-          <div className="success-message" style={{ marginTop: '15px' }}>
-            Account created successfully!
-          </div>
-        )}
-      </form>
-      
-      <p style={{ textAlign: 'center', marginTop: '20px', color: '#666' }}>
-        Already have an account?{' '}
-        <a href="/login" style={{ color: '#007bff', textDecoration: 'none' }}>
-          Sign in here
-        </a>
-      </p>
-    </div>
+          <Box component="form" onSubmit={handleSubmit}>            <TextField
+              fullWidth
+              label="Full Name"
+              name="name"
+              value={form.name}
+              onChange={handleChange}
+              error={!!errors.name}
+              helperText={errors.name || 'Enter your full name'}
+              disabled={status === 'loading'}
+              autoComplete="name"
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <PersonOutline color="action" />
+                  </InputAdornment>
+                ),
+              }}
+              sx={{ mb: 2 }}
+            />
+
+            <TextField
+              fullWidth
+              label="Phone Number"
+              name="phone"
+              type="tel"
+              value={form.phone}
+              onChange={handleChange}
+              placeholder="05X-XXX-XXXX"
+              error={!!errors.phone}
+              helperText={errors.phone || 'This will be your login phone number'}
+              disabled={status === 'loading'}
+              autoComplete="tel"
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <PhoneOutlined color="action" />
+                  </InputAdornment>
+                ),
+              }}
+              sx={{ mb: 3 }}
+            />
+
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              size="large"
+              disabled={status === 'loading'}
+              startIcon={status === 'loading' ? <CircularProgress size={20} /> : undefined}
+              sx={{ mb: 2 }}
+            >
+              {status === 'loading' ? 'Creating Account...' : 'Create Account'}
+            </Button>
+
+            {error && (
+              <Alert severity="error" sx={{ mb: 2 }}>
+                {error}
+              </Alert>
+            )}
+
+            {showSuccess && (
+              <Alert severity="success" sx={{ mb: 2 }}>
+                Account created successfully!
+              </Alert>
+            )}
+
+            <Typography variant="body2" align="center" color="text.secondary">
+              Already have an account?{' '}
+              <Link 
+                to="/login" 
+                style={{ 
+                  color: 'inherit', 
+                  fontWeight: 500 
+                }}
+              >
+                Sign in here
+              </Link>            </Typography>
+          </Box>
+        </Paper>
+      </Box>
+    </Container>
   );
 }
+

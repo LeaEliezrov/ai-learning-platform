@@ -12,6 +12,7 @@ export interface RegisterData {
 }
 
 export interface LoginData {
+  name: string;
   phone: string;
 }
 

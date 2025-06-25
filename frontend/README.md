@@ -44,3 +44,10 @@ You don’t have to ever use `eject`. The curated feature set is suitable for sm
 You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
 
 To learn React, check out the [React documentation](https://reactjs.org/).
+## Technology Choices
+
+### Frontend: React + TypeScript + Material UI
+- **Material UI**: Chosen for rapid development and enterprise-grade components
+- **TypeScript**: Ensures type safety and better maintainability  
+- **Redux Toolkit**: Professional state management solution
+- **Clean Architecture**: Feature-based folder structure for scalability

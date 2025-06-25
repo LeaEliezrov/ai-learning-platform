@@ -1,13 +1,30 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAppSelector, useAppDispatch } from '../app/hooks';
 import { logout } from '../features/user/userSlice';
 
 export default function Dashboard() {
+  const navigate = useNavigate();
   const { currentUser } = useAppSelector(state => state.user);
   const dispatch = useAppDispatch();
 
+  // 🔍 Debug - בואי נראה מה יש כאן!
+  console.log('Dashboard - currentUser:', currentUser);
+  console.log('Dashboard - entire user state:', useAppSelector(state => state.user));
+
   const handleLogout = () => {
     dispatch(logout());
+  };
+  const handleNavigateToCategories = () => {
+    navigate('/categories');
+  };
+
+  const handleNavigateToPrompts = () => {
+    navigate('/prompts');
+  };
+
+  const handleNavigateToHistory = () => {
+    navigate('/history');
   };
 
   return (
@@ -59,19 +76,31 @@ export default function Dashboard() {
             new Date(currentUser.createdAt).toLocaleDateString() : 
             'Today'
           }</p>
-        </div>
-
-        <div style={{
+        </div>        <div style={{
           background: 'white',
           padding: '20px',
           borderRadius: '8px',
           boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)'
-        }}>
-          <h3 style={{ marginBottom: '15px', color: '#333' }}>Quick Actions</h3>
+        }}>          <h3 style={{ marginBottom: '15px', color: '#333' }}>Quick Actions</h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-            <button className="btn btn-primary">Start Learning</button>
-            <button className="btn btn-secondary">View Progress</button>
-            <button className="btn btn-secondary">Settings</button>
+            <button 
+              className="btn btn-primary"
+              onClick={handleNavigateToPrompts}
+            >
+              🤖 Ask AI Question
+            </button>
+            <button 
+              className="btn btn-secondary"
+              onClick={handleNavigateToHistory}
+            >
+              📜 Learning History
+            </button>
+            <button 
+              className="btn btn-secondary"
+              onClick={handleNavigateToCategories}
+            >
+              📚 Browse Categories
+            </button>
           </div>
         </div>
 

@@ -1,5 +1,19 @@
-import { PrismaClient } from '../../generated/prisma';
+import { PrismaClient } from '@prisma/client';
+import * as jwt from 'jsonwebtoken';
+import { JWT_SECRET, JWT_EXPIRES_IN } from '../../config/jwt';
+
 const prisma = new PrismaClient();
+
+// יצירת טוקן JWT
+export const generateToken = (userId: number, name: string, phone: string): string => {
+  const payload = { 
+    id: userId,  // ← שינוי מ-userId ל-id
+    name, 
+    phone 
+  };
+  
+  return jwt.sign(payload, JWT_SECRET, { expiresIn: '24h' });
+};
 
 export const createUser = (data: { name: string; phone: string }) => {
   return prisma.user.create({ data });

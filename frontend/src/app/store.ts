@@ -1,10 +1,13 @@
 import { configureStore } from '@reduxjs/toolkit';
 import userReducer from '../features/user/userSlice';
+import categoriesReducer from '../features/categories/categoriesSlice';
+import promptsReducer from '../features/prompts/promptsSlice';
 
 export const store = configureStore({
   reducer: {
     user: userReducer,
-    // ...reducers נוספים
+    categories: categoriesReducer,
+    prompts: promptsReducer,
   },
 });
 
