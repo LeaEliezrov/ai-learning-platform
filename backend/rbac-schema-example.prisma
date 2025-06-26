@@ -1,0 +1,37 @@
+// זה יהיה בprisma/schema.prisma
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String
+  phone     String   @unique
+  roleId    Int      @default(1) // Default to regular user
+  role      Role     @relation(fields: [roleId], references: [id])
+  prompts   Prompt[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Role {
+  id          Int          @id @default(autoincrement())
+  name        String       @unique // "user", "admin", "moderator"
+  description String?
+  users       User[]
+  permissions Permission[]
+  createdAt   DateTime     @default(now())
+}
+
+model Permission {
+  id          Int    @id @default(autoincrement())
+  name        String @unique // "read_users", "delete_prompts", "admin_dashboard"
+  description String?
+  roles       Role[]
+}
+
+// Many-to-many relationship between roles and permissions
+model RolePermission {
+  roleId       Int
+  permissionId Int
+  role         Role       @relation(fields: [roleId], references: [id])
+  permission   Permission @relation(fields: [permissionId], references: [id])
+
+  @@id([roleId, permissionId])
+}

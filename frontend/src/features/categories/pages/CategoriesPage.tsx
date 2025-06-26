@@ -1,20 +1,13 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {
-  Container,
-  Typography,
-  Box,
-  Breadcrumbs,
-  Link,
-  Alert,
-  CircularProgress,
-} from '@mui/material';
+import { Container, Typography } from '@mui/material';
 import { Home, Category as CategoryIcon } from '@mui/icons-material';
 import { useAppDispatch, useAppSelector } from '../../../app/hooks';
 import type { RootState } from '../../../app/store';
 import { fetchCategories, clearError } from '../categoriesSlice';
 import { Category } from '../types';
 import CategoriesGrid from '../CategoriesGrid';
+import { PageHeader, CustomBreadcrumbs, ErrorAlert, LoadingCard } from '../../../shared/components';
 
 export default function CategoriesPage() {
   const navigate = useNavigate();
@@ -37,97 +30,54 @@ export default function CategoriesPage() {
   }, [error, dispatch]);
 
   const handleSelectCategory = (category: Category) => {
-    // ניווט לדף פרטי הקטגוריה או לדף לימוד
     navigate(`/categories/${category.id}`, { state: { category } });
   };
 
-  const handleBreadcrumbClick = (path: string) => {
-    navigate(path);
-  };
+  const breadcrumbItems = [
+    { label: 'Dashboard', path: '/dashboard', icon: <Home sx={{ fontSize: 16 }} /> },
+    { label: 'Categories', icon: <CategoryIcon sx={{ fontSize: 16 }} /> },
+  ];
+
+  const isLoading = status === 'loading' && categories.length === 0;
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
       {/* Breadcrumbs */}
-      <Breadcrumbs sx={{ mb: 3 }}>
-        <Link
-          component="button"
-          variant="body2"
-          onClick={() => handleBreadcrumbClick('/dashboard')}
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            textDecoration: 'none',
-            color: 'inherit',
-            '&:hover': { textDecoration: 'underline' },
-          }}
-        >
-          <Home sx={{ mr: 0.5, fontSize: 16 }} />
-          Dashboard
-        </Link>
-        <Box sx={{ display: 'flex', alignItems: 'center', color: 'text.primary' }}>
-          <CategoryIcon sx={{ mr: 0.5, fontSize: 16 }} />
-          Categories
-        </Box>
-      </Breadcrumbs>
+      <CustomBreadcrumbs items={breadcrumbItems} />
 
-      {/* כותרת */}
-      <Box sx={{ textAlign: 'center', mb: 6 }}>
-        <Typography 
-          variant="h3" 
-          component="h1" 
-          gutterBottom
-          sx={{ 
-            fontWeight: 700,
-            background: 'linear-gradient(45deg, #1976d2, #42a5f5)',
-            backgroundClip: 'text',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-          }}
-        >
-          Explore Learning Categories
-        </Typography>
-        <Typography 
-          variant="h6" 
-          color="text.secondary"
-          sx={{ maxWidth: 600, mx: 'auto' }}
-        >
-          Choose from our comprehensive collection of academic subjects and start your AI-powered learning journey
-        </Typography>
-      </Box>
+      {/* Page Header */}
+      <PageHeader 
+        title="Explore Learning Categories"
+        subtitle="Choose from our comprehensive collection of academic subjects and start your AI-powered learning journey"
+      />
 
-      {/* הצגת שגיאות */}
-      {error && (
-        <Alert 
-          severity="error" 
-          sx={{ mb: 3 }}
-          onClose={() => dispatch(clearError())}
-        >
-          {error}
-        </Alert>
-      )}
+      {/* Error Alert */}
+      <ErrorAlert 
+        error={error} 
+        onClose={() => dispatch(clearError())} 
+      />
 
-      {/* טעינה */}
-      {status === 'loading' && categories.length === 0 && (
-        <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
-          <CircularProgress size={60} />
-        </Box>
-      )}      {/* רשת קטגוריות */}
-      {status !== 'loading' && (
-        <CategoriesGrid
-          categories={categories}
-          onSelectCategory={handleSelectCategory}
-          loading={false}
-        />
-      )}
-
-      {/* סטטיסטיקות */}
-      {categories.length > 0 && (
-        <Box sx={{ mt: 6, textAlign: 'center' }}>
-          <Typography variant="body2" color="text.secondary">
-            Total: {categories.length} categories with{' '}
-            {categories.reduce((total, cat) => total + cat._count.subCategories, 0)} subcategories
-          </Typography>
-        </Box>
+      {/* Loading or Content */}
+      {isLoading ? (
+        <LoadingCard message="Loading categories..." />
+      ) : (
+        <>
+          <CategoriesGrid
+            categories={categories}
+            onSelectCategory={handleSelectCategory}
+            loading={false}
+          />
+          
+          {/* Statistics */}
+          {categories.length > 0 && (
+            <div style={{ marginTop: '48px', textAlign: 'center' }}>
+              <Typography variant="body2" color="text.secondary">
+                Total: {categories.length} categories with{' '}
+                {categories.reduce((total, cat) => total + cat._count.subCategories, 0)} subcategories
+              </Typography>
+            </div>
+          )}
+        </>
       )}
     </Container>
   );

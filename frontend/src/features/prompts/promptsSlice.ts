@@ -7,14 +7,9 @@ export const submitPrompt = createAsyncThunk(
   'prompts/submitPrompt',
   async (promptData: CreatePromptData, { rejectWithValue }) => {
     try {
-      console.log('🚀 Submitting prompt:', promptData);
       const response = await createPrompt(promptData);
-      console.log('✅ Prompt submitted successfully:', response);
       return response;
     } catch (error: any) {
-      console.error('❌ Failed to submit prompt:', error);
-      console.error('Error response:', error.response);
-      console.error('Error data:', error.response?.data);
       return rejectWithValue(
         error.response?.data?.error || 
         error.response?.data?.details || 
@@ -94,6 +89,7 @@ const promptsSlice = createSlice({
       })
       .addCase(submitPrompt.fulfilled, (state, action) => {
         state.submitStatus = 'succeeded';
+        // Keep the full response including tokensUsed
         state.lastResponse = action.payload;
         // Add to prompts list at the beginning
         state.prompts.unshift(action.payload.prompt);

@@ -1,7 +1,8 @@
 import axios from 'axios';
 import { Category, Subcategory, CreateCategoryData, UpdateCategoryData, CreateSubcategoryData, UpdateSubcategoryData } from './types';
+import { config } from '../../config';
 
-const API_BASE_URL = 'http://localhost:5000/api';
+const API_BASE_URL = `${config.api.baseUrl}/api`;
 
 export const categoryService = {
   getAll: async (): Promise<Category[]> => {

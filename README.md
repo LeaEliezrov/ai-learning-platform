@@ -1,133 +1,233 @@
-# AI Learning Platform
+# AI Learning Platform 🧠
 
-פלטפורמת למידה חדשנית המשלבת בינה מלאכותית לחוויית למידה מותאמת אישית.
+A full-stack learning platform with AI-powered personalized lessons. Built with TypeScript, React, Node.js, and PostgreSQL.
 
-## 🚀 תכונות
+## 🚀 Quick Start
 
-- **ממשק משתמש אינטואיטיבי**: React עם TypeScript ו-Tailwind CSS
-- **API חזק**: Node.js עם Express ו-Prisma ORM
-- **אבטחה מתקדמת**: אימות משתמשים ואבטחת נתונים
-- **מבנה מודולרי**: ארכיטקטורה נקייה וניתנת לתחזוקה
+### Prerequisites
+- Node.js 18+
+- PostgreSQL (or Docker)
+- OpenAI API key
 
-## 🛠️ טכנולוגיות
+### Setup
+```bash
+# 1. Clone and install
+git clone [your-repo]
+cd ai-learning-platform
 
-### Frontend
-- React 18
-- TypeScript
-- Tailwind CSS
-- Redux Toolkit
-- React Router
+# 2. Backend setup
+cd backend
+npm install
+cp .env.example .env
+# Edit .env with your credentials
 
-### Backend
-- Node.js
-- Express.js
-- TypeScript
-- Prisma ORM
-- PostgreSQL/SQLite
+# 3. Database (Docker option)
+docker-compose up -d
 
-## 📦 התקנה
+# 4. Database migrations
+npx prisma migrate dev
+npm run seed
+npm run create-admin
 
-### דרישות מוקדמות
-- Node.js (גרסה 16 או מעלה)
-- npm או yarn
-- Git
+# 5. Start backend
+npm run dev
 
-### שלבי התקנה
+# 6. Frontend setup (new terminal)
+cd frontend
+npm install
+npm start
+```
 
-1. **שכפול הפרויקט:**
-   ```bash
-   git clone https://github.com/[YOUR-USERNAME]/ai-learning-platform.git
-   cd ai-learning-platform
-   ```
+### Admin Login
+- Phone: `0500000000`
+- Set password during `create-admin` script
 
-2. **התקנת תלויות Backend:**
-   ```bash
-   cd backend
-   npm install
-   ```
+## 🚀 Features
 
-3. **התקנת תלויות Frontend:**
-   ```bash
-   cd ../frontend
-   npm install
-   ```
+- **User Authentication**: JWT-based registration and login
+- **AI-Powered Learning**: OpenAI integration for personalized lessons
+- **Category Management**: Organized learning topics
+- **Learning History**: Track and review past interactions
+- **Admin Dashboard**: User and content management
+- **TypeScript**: Full type safety throughout
+- **Material-UI**: Professional, responsive design
+- **Testing**: Comprehensive test coverage
 
-4. **הגדרת מסד הנתונים:**
-   ```bash
-   cd ../backend
-   npx prisma migrate dev
-   npx prisma generate
-   ```
+## 🛠 Tech Stack
 
-## 🚀 הפעלה
+- **Frontend**: React 18, TypeScript, Redux Toolkit, Material-UI
+- **Backend**: Node.js, Express, TypeScript, Prisma ORM
+- **Database**: PostgreSQL
+- **AI**: OpenAI GPT API
+- **Testing**: Jest, Supertest
+- **Documentation**: Swagger/OpenAPI
 
-### פיתוח מקומי
-
-1. **הפעלת Backend:**
-   ```bash
-   cd backend
-   npm run dev
-   ```
-   השרת יעלה על http://localhost:3001
-
-2. **הפעלת Frontend:**
-   ```bash
-   cd frontend
-   npm start
-   ```
-   האפליקציה תיפתח על http://localhost:3000
-
-## 📁 מבנה הפרויקט
+## 📁 Project Structure
 
 ```
 ai-learning-platform/
-├── backend/                 # שרת API
+├── backend/
+│   ├── prisma/
+│   │   ├── schema.prisma          # Database schema
+│   │   └── migrations/            # Database migrations
 │   ├── src/
-│   │   ├── modules/        # מודולים עסקיים
-│   │   │   ├── users/      # ניהול משתמשים
-│   │   │   ├── categories/ # קטגוריות
-│   │   │   └── prompts/    # הנחיות AI
-│   │   ├── config/         # הגדרות
-│   │   └── utils/          # עזרים
-│   ├── prisma/             # סכימת מסד נתונים
+│   │   ├── config/               # Configuration files
+│   │   ├── modules/              # Feature modules
+│   │   │   ├── users/           # User management
+│   │   │   ├── categories/      # Category management
+│   │   │   ├── subcategories/   # Subcategory management
+│   │   │   └── prompts/         # AI prompt handling
+│   │   ├── utils/               # Utilities and middleware
+│   │   ├── app.ts               # Express app setup
+│   │   └── server.ts            # Server entry point
 │   └── package.json
-├── frontend/               # אפליקציית React
+├── frontend/
 │   ├── src/
-│   │   ├── components/     # רכיבי UI
-│   │   ├── features/       # תכונות עסקיות
-│   │   ├── pages/          # דפים
-│   │   ├── store/          # ניהול מצב
-│   │   └── hooks/          # Custom Hooks
+│   │   ├── features/            # Feature-based components
+│   │   │   ├── auth/           # Authentication (Login/Register)
+│   │   │   ├── user/           # User management & protection
+│   │   │   ├── categories/     # Category management
+│   │   │   ├── prompts/        # AI prompts
+│   │   │   └── admin/          # Admin dashboard
+│   │   ├── pages/              # Page components
+│   │   ├── routes/             # React Router setup
+│   │   ├── app/                # Redux store
+│   │   ├── config/             # App configuration
+│   │   ├── theme/              # MUI theme
+│   │   └── shared/             # Shared utilities
+│   │       ├── components/     # Reusable UI components
+│   │       ├── hooks/          # Custom React hooks
+│   │       ├── utils/          # Utility functions
+│   │       ├── api/            # API client & helpers
+│   │       └── types/          # TypeScript types
 │   └── package.json
+├── docker-compose.yml          # PostgreSQL database setup
 └── README.md
 ```
 
-## 🔧 API Endpoints
+## � Database Setup
 
-### משתמשים
-- `POST /api/users/register` - רישום משתמש חדש
-- `POST /api/users/login` - התחברות
-- `GET /api/users` - קבלת כל המשתמשים
-- `GET /api/users/:id` - קבלת משתמש לפי ID
-- `PATCH /api/users/:id` - עדכון משתמש
-- `DELETE /api/users/:id` - מחיקת משתמש
+### Option 1: Docker (Recommended)
+```bash
+# Start PostgreSQL with Docker
+cd backend
+docker-compose up -d
 
-## 🤝 תרומה
+# Run migrations
+npx prisma migrate dev
+```
 
-1. Fork את הפרויקט
-2. צור branch חדש (`git checkout -b feature/amazing-feature`)
-3. Commit את השינויים (`git commit -m 'Add amazing feature'`)
-4. Push ל-branch (`git push origin feature/amazing-feature`)
-5. פתח Pull Request
+### Option 2: Local PostgreSQL
+```bash
+# Install PostgreSQL locally and configure .env
+# DATABASE_URL="postgresql://username:password@localhost:5432/ai_learning_platform"
+```
 
-## 📝 רישיון
+## 🔐 Environment Variables
 
-הפרויקט הזה מוגן תחת רישיון MIT. ראה את קובץ `LICENSE` לפרטים נוספים.
+### Backend (.env)
+```env
+DATABASE_URL="postgresql://username:password@localhost:5432/ai_learning_platform"
+JWT_SECRET="your-super-secret-jwt-key"
+OPENAI_API_KEY="sk-your-openai-api-key"
+PORT=5000
+```
 
-## 📞 יצירת קשר
+### Frontend (.env.local - optional)
+```env
+REACT_APP_API_URL="http://localhost:5000"
+```
 
-לשאלות או הצעות, אנא פתח issue בפרויקט או צור קשר ישירות.
+## � Quick Development Scripts
+
+For easier development workflow, use the provided scripts:
+
+### Windows
+```bash
+# Initial setup
+dev.bat setup
+
+# Start development servers
+dev.bat dev
+
+# Run tests
+dev.bat test
+
+# Build for production
+dev.bat build
+```
+
+### Linux/Mac
+```bash
+# Make script executable
+chmod +x dev.sh
+
+# Initial setup
+./dev.sh setup
+
+# Start development servers
+./dev.sh dev
+
+# Run tests
+./dev.sh test
+
+# Build for production
+./dev.sh build
+```
+
+## �🔧 Development Workflow
+
+### Code Quality & Testing
+```bash
+# Backend
+cd backend
+npm test                  # Run tests
+npm run test:coverage     # Coverage report
+npm run build            # TypeScript compilation
+
+# Frontend  
+cd frontend
+npm test                 # Run tests
+npm run build           # Production build
+```
+
+### API Documentation
+- Development: `http://localhost:5000/api-docs`
+- Interactive Swagger UI with request/response examples
+- Complete endpoint documentation with schemas
+
+### Monitoring & Health Checks
+## 🧪 Testing
+
+### Backend
+```bash
+cd backend
+npm test                 # Run tests
+npm run test:coverage    # Coverage report
+```
+
+### Frontend
+```bash
+cd frontend
+npm test                # Run tests
+npm test -- --coverage # Coverage report
+```
+
+## 🔧 Development
+
+### API Documentation
+- Swagger UI: `http://localhost:5000/api-docs`
+- Health Check: `http://localhost:5000/health`
+
+### Build for Production
+```bash
+# Backend
+cd backend && npm run build
+
+# Frontend
+cd frontend && npm run build
+```
 
 ---
 
-**הערה:** הפרויקט נמצא בפיתוח פעיל. תכונות נוספות יתווספו בקרוב!
+**Built with modern web technologies for learning and portfolio purposes**

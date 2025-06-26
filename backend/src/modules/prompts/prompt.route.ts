@@ -1,10 +1,10 @@
 import { Router } from 'express';
 import { PromptsController } from './prompt.controller';
-import { authenticateToken } from '../../utils/auth.middleware';
+import { authenticateToken, requireAdmin } from '../../utils/auth.middleware';
 
 const router = Router();
 
-// כל ה-routes האלה דורשים authentication
+// User routes - require authentication only
 router.use(authenticateToken);
 
 // יצירת prompt חדש
@@ -19,7 +19,7 @@ router.get('/:id', PromptsController.getPromptById);
 // מחיקת prompt
 router.delete('/:id', PromptsController.deletePrompt);
 
-// Admin routes (לעתיד - נצטרך להוסיף admin middleware)
-router.get('/admin/all', PromptsController.getAllPrompts);
+// Admin routes - require both authentication AND admin status
+router.get('/admin/all', requireAdmin, PromptsController.getAllPrompts);
 
 export default router;

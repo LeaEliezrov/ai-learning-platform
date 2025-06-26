@@ -2,10 +2,6 @@ import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { categoryService } from './categoryService';
 import { Category, Subcategory, CreateCategoryData, UpdateCategoryData } from './types';
 
-// Debug - בדיקה שה-import עובד
-console.log('categoriesApi:', categoryService);
-console.log('categoriesApi.getAll:', categoryService?.getAll);
-
 // Helper function for error handling
 const handleError = (error: unknown): string => {
   if (error instanceof Error) {

@@ -16,7 +16,7 @@ export class PromptService {
         where: { id: categoryId }
       });
 
-      const subcategory = await prisma.subcategory.findUnique({
+      const subcategory = await prisma.subCategory.findUnique({
         where: { id: subcategoryId }
       });
 
@@ -36,13 +36,13 @@ export class PromptService {
         data: {
           userId: parseInt(userId),
           categoryId,
-          subcategoryId,
+          subCategoryId: subcategoryId,
           prompt,
           response: aiResponse,
         },
         include: {
           category: true,
-          subcategory: true,
+          SubCategory: true,
         }
       });
 
@@ -59,7 +59,7 @@ export class PromptService {
         where: { userId: parseInt(userId) },
         include: {
           category: true,
-          subcategory: true,
+          SubCategory: true,
         },
         orderBy: { createdAt: 'desc' }
       });
@@ -76,7 +76,7 @@ export class PromptService {
       const prompts = await prisma.prompt.findMany({
         include: {
           category: true,
-          subcategory: true,
+          SubCategory: true,
           user: {
             select: {
               id: true,
@@ -101,7 +101,7 @@ export class PromptService {
         where: { id },
         include: {
           category: true,
-          subcategory: true,
+          SubCategory: true,
           user: {
             select: {
               id: true,

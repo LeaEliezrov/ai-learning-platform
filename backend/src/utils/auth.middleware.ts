@@ -10,6 +10,7 @@ declare global {
         id: string;
         name: string;
         phone: string;
+        role: 'USER' | 'ADMIN';
       };
     }
   }
@@ -20,6 +21,7 @@ export interface JWTPayload {
   userId?: number; // תמיכה ב-payload ישן
   name: string;
   phone: string;
+  role?: 'USER' | 'ADMIN';
 }
 
 export const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
@@ -44,15 +46,14 @@ export const authenticateToken = (req: Request, res: Response, next: NextFunctio
     if (!userId) {
       console.log('❌ No user ID found in token');
       return res.status(403).json({ error: 'Invalid token: missing user ID' });
-    }
-    
-    req.user = {
+    }      req.user = {
       id: userId.toString(),
       name: decoded.name,
-      phone: decoded.phone
+      phone: decoded.phone,
+      role: decoded.role || 'USER'
     };
     console.log('✅ req.user set:', req.user);
-    next();  } catch (error) {
+    next();} catch (error) {
     console.error('❌ Token verification failed:', error);
     
     if (error instanceof jwt.JsonWebTokenError) {
@@ -78,16 +79,33 @@ export const optionalAuth = (req: Request, res: Response, next: NextFunction) =>
   try {
     const decoded = jwt.verify(token, JWT_SECRET) as JWTPayload;
     const userId = decoded.id || decoded.userId;
-    if (userId) {
-      req.user = {
+    if (userId) {      req.user = {
         id: userId.toString(),
         name: decoded.name,
-        phone: decoded.phone
+        phone: decoded.phone,
+        role: decoded.role || 'USER'
       };
     }
   } catch (error) {
     console.error('Optional token verification failed:', error);
   }
   
+  next();
+};
+
+// Admin middleware - רק מנהלים יכולים לגשת
+export const requireAdmin = (req: Request, res: Response, next: NextFunction) => {
+  if (!req.user) {
+    return res.status(401).json({ error: 'Authentication required' });
+  }
+
+  if (req.user.role !== 'ADMIN') {
+    return res.status(403).json({ 
+      error: 'Admin access required',
+      message: 'You need admin privileges to access this resource'
+    });
+  }
+
+  console.log('✅ Admin access granted to:', req.user.name);
   next();
 };

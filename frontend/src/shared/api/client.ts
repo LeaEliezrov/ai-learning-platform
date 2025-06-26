@@ -1,7 +1,8 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
+import { config } from '../../config/index';
 
 // Base API configuration
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+const API_BASE_URL = `${config.api.baseUrl}/api`;
 
 // Create axios instance
 export const apiClient: AxiosInstance = axios.create({

@@ -1,7 +1,8 @@
 import axios from 'axios';
 import { RegisterData, LoginData, AuthResponse } from './types';
+import { config } from '../../config';
 
-const API_URL = 'http://localhost:5000/api/users';
+const API_URL = `${config.api.baseUrl}/api/users`;
 
 // Create axios instance with default config
 const api = axios.create({

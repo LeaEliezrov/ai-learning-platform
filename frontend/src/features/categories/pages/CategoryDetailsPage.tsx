@@ -8,7 +8,6 @@ import {
   Link,
   Alert,
   CircularProgress,
-  Grid,
   Card,
   CardContent,
   CardActionArea,
@@ -69,7 +68,10 @@ export default function CategoryDetailsPage() {
 
   const handleSubcategorySelect = (subcategory: Subcategory) => {
     // כאן נוכל לנווט לדף הלמידה של תת-הקטגוריה
-    console.log('Selected subcategory:', subcategory);
+    // Log selection for debugging in development only
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Selected subcategory:', subcategory);
+    }
     // navigate(`/learn/${subcategory.id}`, { state: { subcategory, category: currentCategory } });
   };
 

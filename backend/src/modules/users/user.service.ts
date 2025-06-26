@@ -5,11 +5,12 @@ import { JWT_SECRET, JWT_EXPIRES_IN } from '../../config/jwt';
 const prisma = new PrismaClient();
 
 // יצירת טוקן JWT
-export const generateToken = (userId: number, name: string, phone: string): string => {
+export const generateToken = (userId: number, name: string, phone: string, role: 'USER' | 'ADMIN' = 'USER'): string => {
   const payload = { 
-    id: userId,  // ← שינוי מ-userId ל-id
+    id: userId,
     name, 
-    phone 
+    phone,
+    role
   };
   
   return jwt.sign(payload, JWT_SECRET, { expiresIn: '24h' });

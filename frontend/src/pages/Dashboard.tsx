@@ -1,121 +1,86 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAppSelector, useAppDispatch } from '../app/hooks';
-import { logout } from '../features/user/userSlice';
+import { Container, Box } from '@mui/material';
+import {
+  Category as CategoryIcon,
+  QuestionAnswer as QuestionAnswerIcon,
+  History as HistoryIcon,
+  AutoAwesome as AIIcon,
+} from '@mui/icons-material';
+import { useAppSelector } from '../app/hooks';
+import { useAuth } from '../shared/hooks/useAuth';
+import {
+  DashboardHeader,
+  ActionCard,
+  QuickStats,
+  AdminAccess,
+} from '../features/dashboard/components';
 
 export default function Dashboard() {
   const navigate = useNavigate();
   const { currentUser } = useAppSelector(state => state.user);
-  const dispatch = useAppDispatch();
+  const { logout } = useAuth();
 
-  // 🔍 Debug - בואי נראה מה יש כאן!
-  console.log('Dashboard - currentUser:', currentUser);
-  console.log('Dashboard - entire user state:', useAppSelector(state => state.user));
+  useEffect(() => {
+    if (!currentUser) {
+      navigate('/login');
+    }
+  }, [currentUser, navigate]);
 
-  const handleLogout = () => {
-    dispatch(logout());
-  };
-  const handleNavigateToCategories = () => {
-    navigate('/categories');
-  };
+  if (!currentUser) {
+    return null;
+  }
 
-  const handleNavigateToPrompts = () => {
-    navigate('/prompts');
-  };
+  const isAdmin = currentUser.role === 'ADMIN';
 
-  const handleNavigateToHistory = () => {
-    navigate('/history');
-  };
+  const mainActions = [
+    {
+      title: 'Explore Categories',
+      description: 'Browse through different learning topics and subjects',
+      icon: <CategoryIcon sx={{ fontSize: 40 }} />,
+      action: () => navigate('/categories'),
+      color: '#2196F3',
+    },
+    {
+      title: 'Ask AI',
+      description: 'Submit a prompt and get AI-generated learning content',
+      icon: <AIIcon sx={{ fontSize: 40 }} />,
+      action: () => navigate('/prompts'),
+      color: '#4CAF50',
+    },
+    {
+      title: 'Learning History',
+      description: 'View your past learning sessions and AI responses',
+      icon: <HistoryIcon sx={{ fontSize: 40 }} />,
+      action: () => navigate('/history'),
+      color: '#FF9800',
+    },
+  ];
 
   return (
-    <div className="container">
-      <div className="nav">
-        <div className="nav-container">
-          <a href="/" className="nav-brand">AI Learning Platform</a>
-          <nav>
-            <ul className="nav-links">
-              <li>
-                <span className="nav-link">Welcome, {currentUser?.name}</span>
-              </li>
-              <li>
-                <button 
-                  onClick={handleLogout} 
-                  className="btn btn-secondary"
-                  style={{ padding: '8px 16px', fontSize: '14px' }}
-                >
-                  Logout
-                </button>
-              </li>
-            </ul>
-          </nav>
-        </div>
-      </div>
+    <Container maxWidth="lg" sx={{ py: 4 }}>
+      {/* Hero Section */}
+      <DashboardHeader user={currentUser} onLogout={logout} />
 
-      <div className="page-header">
-        <h1 className="page-title">Dashboard</h1>
-        <p className="page-subtitle">Welcome to your learning dashboard</p>
-      </div>
+      {/* Admin Dashboard Access */}
+      {isAdmin && <AdminAccess onNavigateToAdmin={() => navigate('/admin')} />}
 
-      <div style={{ 
-        display: 'grid', 
-        gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', 
-        gap: '20px',
-        marginTop: '30px'
-      }}>
-        <div style={{
-          background: 'white',
-          padding: '20px',
-          borderRadius: '8px',
-          boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)'
-        }}>
-          <h3 style={{ marginBottom: '15px', color: '#333' }}>Profile Information</h3>
-          <p><strong>Name:</strong> {currentUser?.name}</p>
-          <p><strong>Phone:</strong> {currentUser?.phone}</p>
-          <p><strong>Member since:</strong> {
-            currentUser?.createdAt ? 
-            new Date(currentUser.createdAt).toLocaleDateString() : 
-            'Today'
-          }</p>
-        </div>        <div style={{
-          background: 'white',
-          padding: '20px',
-          borderRadius: '8px',
-          boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)'
-        }}>          <h3 style={{ marginBottom: '15px', color: '#333' }}>Quick Actions</h3>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-            <button 
-              className="btn btn-primary"
-              onClick={handleNavigateToPrompts}
-            >
-              🤖 Ask AI Question
-            </button>
-            <button 
-              className="btn btn-secondary"
-              onClick={handleNavigateToHistory}
-            >
-              📜 Learning History
-            </button>
-            <button 
-              className="btn btn-secondary"
-              onClick={handleNavigateToCategories}
-            >
-              📚 Browse Categories
-            </button>
-          </div>
-        </div>
+      {/* Main Actions */}
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, mb: 4 }}>
+        {mainActions.map((action, index) => (
+          <ActionCard
+            key={index}
+            title={action.title}
+            description={action.description}
+            icon={action.icon}
+            action={action.action}
+            color={action.color}
+          />
+        ))}
+      </Box>
 
-        <div style={{
-          background: 'white',
-          padding: '20px',
-          borderRadius: '8px',
-          boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)'
-        }}>
-          <h3 style={{ marginBottom: '15px', color: '#333' }}>Recent Activity</h3>
-          <p style={{ color: '#666', fontStyle: 'italic' }}>
-            No recent activity yet. Start learning to see your progress here!
-          </p>
-        </div>
-      </div>
-    </div>
+      {/* Quick Stats */}
+      <QuickStats />
+    </Container>
   );
 }
