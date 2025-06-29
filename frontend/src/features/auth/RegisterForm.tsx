@@ -65,8 +65,9 @@ export default function RegisterForm() {
       phone: values.phone.replace(/\D/g, '') // Send only digits
     }));
 
+    // אל תעשי כאן navigate('/dashboard');
     if (register.fulfilled.match(result)) {
-      navigate('/dashboard');
+      // השאירי ריק
     }
   };
 

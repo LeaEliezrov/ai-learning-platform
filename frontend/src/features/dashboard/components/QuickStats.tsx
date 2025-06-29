@@ -19,9 +19,9 @@ const defaultStats: StatsItem[] = [
     description: 'Powered Learning',
   },
   {
-    icon: '24/7',
-    title: '24/7',
-    description: 'Available Anytime',
+    icon: '🌟',
+    title: 'Innovation',
+    description: 'Innovation',
   },
   {
     icon: '∞',
@@ -30,7 +30,7 @@ const defaultStats: StatsItem[] = [
   },
   {
     icon: '📚',
-    title: '📚',
+    title: 'Personalized',
     description: 'Personalized Content',
   },
 ];

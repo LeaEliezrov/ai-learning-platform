@@ -22,13 +22,23 @@ api.interceptors.request.use((config) => {
 });
 
 export const registerUser = async (data: RegisterData): Promise<AuthResponse> => {
-  const response = await api.post('/register', data);
-  return response.data;
+  try {
+    const response = await api.post('/register', data);
+    return response.data;
+  } catch (error: any) {
+    // החזרת הודעת השגיאה מהשרת
+    throw new Error(error.response?.data?.message || 'שגיאת הרשמה');
+  }
 };
 
 export const loginUser = async (data: LoginData): Promise<AuthResponse> => {
-  const response = await api.post('/login', data);
-  return response.data;
+  try {
+    const response = await api.post('/login', data);
+    return response.data;
+  } catch (error: any) {
+    // החזרת הודעת השגיאה מהשרת
+    throw new Error(error.response?.data?.message || 'שגיאת התחברות');
+  }
 };
 
 export const getCurrentUser = async () => {
